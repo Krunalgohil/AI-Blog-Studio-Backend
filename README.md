@@ -1,4 +1,4 @@
-# 🚀 Medium AI Autonomous Publisher
+# 🚀 AI Blog Studio
 
 A **fully autonomous** AI-powered blog creation and Medium publishing system built with **Spring Boot 3.3** + **LangChain4j** + **Playwright**.
 
