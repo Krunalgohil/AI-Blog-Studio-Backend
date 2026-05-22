@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-MediumAiPublisherApplication<medium-ai-autonomous-publisher>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.sumit.mediumaipublisher.MediumAiPublisherApplication",
+      "projectName": "medium-ai-autonomous-publisher",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

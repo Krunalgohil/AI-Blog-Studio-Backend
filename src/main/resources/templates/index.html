@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medium AI Autonomous Publisher</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- ════════════════════════════════════════════════════════════
+         HEADER
+         ════════════════════════════════════════════════════════════ -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">✦</span>
+                <h1>Medium AI Publisher</h1>
+            </div>
+            <p class="tagline">Research → Write → Optimize → Humanize → Publish — Fully Autonomous</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- ════════════════════════════════════════════════════════════
+             TOPIC INPUT FORM
+             ════════════════════════════════════════════════════════════ -->
+        <section class="card generator-card">
+            <h2 class="card-title">
+                <span class="icon">🚀</span>
+                Generate a Blog Post
+            </h2>
+            <form method="post" th:action="@{/generate}" class="generator-form" id="generateForm">
+                <div class="input-group">
+                    <input type="text"
+                           name="topic"
+                           id="topicInput"
+                           placeholder="Enter a topic... e.g., 'The Future of AI in Healthcare'"
+                           required
+                           autocomplete="off">
+                    <button type="submit" id="generateBtn" class="btn-generate">
+                        <span class="btn-text">Generate &amp; Publish</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                </div>
+            </form>
+            <div class="hints">
+                <span class="hint-label">Try:</span>
+                <button type="button" class="hint-chip" onclick="setTopic('Why Remote Work Is Here to Stay')">Remote Work</button>
+                <button type="button" class="hint-chip" onclick="setTopic('How AI Is Transforming Education in 2026')">AI in Education</button>
+                <button type="button" class="hint-chip" onclick="setTopic('The Science of Building Better Habits')">Building Habits</button>
+                <button type="button" class="hint-chip" onclick="setTopic('Web3 and the Creator Economy')">Web3 Creators</button>
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════
+             ERROR MESSAGE
+             ════════════════════════════════════════════════════════════ -->
+        <div th:if="${error}" class="alert alert-error">
+            <span class="alert-icon">⚠️</span>
+            <span th:text="${error}">Error message</span>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════
+             SUCCESS / RESULT MESSAGE
+             ════════════════════════════════════════════════════════════ -->
+        <div th:if="${response}" class="alert" th:classappend="${response.success} ? 'alert-success' : 'alert-error'">
+            <span class="alert-icon" th:text="${response.success} ? '✅' : '❌'">✅</span>
+            <span th:text="${response.message}">Result message</span>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════
+             GENERATED BLOG PREVIEW
+             ════════════════════════════════════════════════════════════ -->
+        <section th:if="${generatedBlog}" class="card preview-card">
+            <div class="preview-header">
+                <h2 class="card-title">
+                    <span class="icon">📄</span>
+                    Generated Blog Preview
+                </h2>
+                <span class="status-badge" th:classappend="${generatedBlog.status.name() == 'PUBLISHED'} ? 'badge-published' : 'badge-draft'"
+                      th:text="${generatedBlog.status}">DRAFT</span>
+            </div>
+
+            <div class="preview-meta">
+                <div class="meta-item" th:if="${generatedBlog.metaDescription}">
+                    <strong>Meta Description:</strong>
+                    <span th:text="${generatedBlog.metaDescription}">Meta description here</span>
+                </div>
+                <div class="meta-item" th:if="${generatedBlog.tags}">
+                    <strong>Tags:</strong>
+                    <span class="tags-list">
+                        <span th:each="tag : ${generatedBlog.tags.split(',')}"
+                              class="tag" th:text="${tag.trim()}">Tag</span>
+                    </span>
+                </div>
+            </div>
+
+            <h3 class="preview-title" th:text="${generatedBlog.title}">Blog Title</h3>
+            <div class="preview-content" th:utext="${#strings.replace(#strings.escapeXml(generatedBlog.content), '&#10;', '&lt;br/&gt;')}">
+                Blog content here...
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════
+             BLOG HISTORY
+             ════════════════════════════════════════════════════════════ -->
+        <section class="card history-card" th:if="${blogs != null and !blogs.isEmpty()}">
+            <h2 class="card-title">
+                <span class="icon">📚</span>
+                Previous Blogs
+                <span class="count-badge" th:text="${blogs.size()}">0</span>
+            </h2>
+            <div class="blog-list">
+                <div th:each="blog : ${blogs}" class="blog-item">
+                    <div class="blog-item-header">
+                        <h3 th:text="${blog.title}">Blog Title</h3>
+                        <span class="status-badge"
+                              th:classappend="${blog.status.name() == 'PUBLISHED'} ? 'badge-published' : 'badge-draft'"
+                              th:text="${blog.status}">DRAFT</span>
+                    </div>
+                    <div class="blog-item-meta">
+                        <span class="meta-topic">
+                            <strong>Topic:</strong>
+                            <span th:text="${blog.topic}">Topic</span>
+                        </span>
+                        <span class="meta-date" th:text="${#temporals.format(blog.createdAt, 'MMM dd, yyyy HH:mm')}">
+                            Jan 01, 2026
+                        </span>
+                    </div>
+                    <div class="blog-item-tags" th:if="${blog.tags}">
+                        <span th:each="tag : ${blog.tags.split(',')}"
+                              class="tag tag-sm" th:text="${tag.trim()}">Tag</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════
+             EMPTY STATE
+             ════════════════════════════════════════════════════════════ -->
+        <section class="card empty-state" th:if="${blogs == null or blogs.isEmpty()}" th:unless="${generatedBlog}">
+            <div class="empty-icon">✦</div>
+            <h3>No blogs yet</h3>
+            <p>Enter a topic above and click "Generate & Publish" to create your first AI-powered blog post.</p>
+        </section>
+    </main>
+
+    <!-- ════════════════════════════════════════════════════════════
+         FOOTER
+         ════════════════════════════════════════════════════════════ -->
+    <footer class="footer">
+        <p>Medium AI Autonomous Publisher &middot; Powered by LangChain4j + OpenAI + Playwright</p>
+    </footer>
+
+    <script>
+        function setTopic(topic) {
+            document.getElementById('topicInput').value = topic;
+            document.getElementById('topicInput').focus();
+        }
+
+        // Show loading state on form submit
+        document.getElementById('generateForm').addEventListener('submit', function() {
+            const btn = document.getElementById('generateBtn');
+            btn.classList.add('loading');
+            btn.querySelector('.btn-text').textContent = 'Generating...';
+            btn.disabled = true;
+        });
+    </script>
+</body>
+</html>

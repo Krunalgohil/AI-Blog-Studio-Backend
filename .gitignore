@@ -1,0 +1,13 @@
+# IntelliJ
+.idea/
+*.iml
+
+# Maven
+target/
+.mvn/
+
+# Env
+.env
+
+# Data
+data/
