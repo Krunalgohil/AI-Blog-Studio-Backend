@@ -17,7 +17,7 @@ public class CorsConfig {
 
         // Allow frontend apps (React dev servers) to call this backend
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:60697", "https://ai-blog-studio-frontend.onrender.com"));
+        config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:60697", "https://aiblogstudio.onrender.com"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
