@@ -1,12 +1,17 @@
-FROM eclipse-temurin:21-jdk
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
 COPY . .
 
-RUN chmod +x mvnw
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
-EXPOSE 10000
+FROM eclipse-temurin:21-jdk
 
-CMD ["java", "-jar", "target/ai-blog-studio-1.0.0.jar"]
+WORKDIR /app
+
+COPY --from=build /app/target/ai-blog-studio-1.0.0.jar app.jar
+
+EXPOSE 8080
+
+CMD ["java", "-jar", "app.jar"]
